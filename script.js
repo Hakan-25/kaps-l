@@ -1,11 +1,12 @@
 // --- FIREBASE AYARLARI (BUNLARI KENDİ PROJENLE DEĞİŞTİR) ---
 const firebaseConfig = {
-    apiKey: "SENIN_API_KEYIN",
-    authDomain: "SENIN_PROJE_ID.firebaseapp.com",
-    projectId: "SENIN_PROJE_ID",
-    storageBucket: "SENIN_PROJE_ID.firebasestorage.app",
-    messagingSenderId: "SAYILAR",
-    appId: "UZUN_BIR_KOD"
+  apiKey: "AIzaSyCD_dKXan4yjAzxqLc8Yfjx4JzXNne45Lk",
+  authDomain: "zamankaps.firebaseapp.com",
+  projectId: "zamankaps",
+  storageBucket: "zamankaps.firebasestorage.app",
+  messagingSenderId: "167594541047",
+  appId: "1:167594541047:web:b61c2ba198c07c69c8b8f2",
+  measurementId: "G-268PLLLDRD"
 };
 
 // Firebase'i Başlat
