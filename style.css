@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+    --primary: #6C63FF; /* Modern Mor */
+    --secondary: #2F2E41;
+    --bg: #f4f6f8;
+    --white: #ffffff;
+    --danger: #ff4b4b;
+    --text: #333;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+body { background-color: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
+
+.container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; transition: 0.3s; }
+.hidden { display: none !important; }
+
+/* --- Auth Ekranı --- */
+#auth-container { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #6C63FF, #4b45c2); }
+.auth-box { background: var(--white); padding: 2rem; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+.logo { color: var(--primary); margin-bottom: 5px; }
+.tagline { color: #777; font-size: 0.9rem; margin-bottom: 20px; }
+
+input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; outline: none; transition: 0.3s; }
+input:focus { border-color: var(--primary); }
+
+button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+button:active { transform: scale(0.98); }
+
+.switch-text { margin-top: 15px; font-size: 0.85rem; }
+.switch-text span { color: var(--primary); font-weight: 600; cursor: pointer; }
+.error-msg { color: var(--danger); font-size: 0.8rem; margin-top: 10px; min-height: 15px; }
+
+/* --- Ana Uygulama Ekranı --- */
+#app-container { display: flex; flex-direction: column; }
+
+header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10; }
+
+.left-action { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.plus-btn { width: 35px; height: 35px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(108, 99, 255, 0.4); }
+.left-action span { font-weight: 600; font-size: 0.9rem; color: var(--secondary); }
+
+.user-info { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 600; }
+.user-info i { color: var(--danger); cursor: pointer; font-size: 1.1rem; margin-left: 5px; }
+
+/* Kapsül Listesi */
+.capsule-list { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+.empty-state { text-align: center; color: #999; margin-top: 50px; font-style: italic; }
+
+.capsule-card { background: var(--white); padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
+.capsule-card.locked { border-left-color: #999; opacity: 0.8; }
+.capsule-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: #777; margin-bottom: 8px; }
+.capsule-body { font-size: 1rem; color: var(--text); margin-bottom: 10px; white-space: pre-wrap; }
+.capsule-img { width: 100%; border-radius: 8px; margin-top: 10px; max-height: 200px; object-fit: cover; }
+.capsule-timer { font-size: 0.8rem; font-weight: 600; color: var(--primary); text-align: right; }
+.locked-msg { color: #777; display: flex; align-items: center; gap: 5px; font-size: 0.9rem; background: #eee; padding: 10px; border-radius: 8px; }
+
+/* --- Modal --- */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; justify-content: center; z-index: 20; backdrop-filter: blur(3px); }
+.modal-content { background: var(--white); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 25px; animation: slideUp 0.3s ease; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.close-btn { font-size: 1.5rem; cursor: pointer; }
+.modal-body textarea { width: 100%; height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; resize: none; margin-bottom: 10px; }
+.save-btn { background: linear-gradient(to right, #6C63FF, #8B85FF); margin-top: 20px; }
+
+/* Masaüstü Uyumu */
+@media (min-width: 768px) {
+    .modal { align-items: center; }
+    .modal-content { border-radius: 20px; width: 400px; }
+    #app-container { max-width: 800px; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.05); height: 100vh; background: white; }
+    .capsule-list { background: var(--bg); }
+}
