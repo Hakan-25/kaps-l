@@ -1,12 +1,14 @@
 // --- FIREBASE AYARLARI ---
+// --- FIREBASE AYARLARI ---
+// "sabit" değil "const" olmalı
 const firebaseConfig = {
   apiKey: "AIzaSyCD_dKXan4yjAzxqLc8Yfjx4JzXNne45Lk",
   authDomain: "zamankaps.firebaseapp.com",
-  projectId: "zamankaps",
+  projectId: "zamankaps",                // "projeId" değil
   storageBucket: "zamankaps.firebasestorage.app",
   messagingSenderId: "167594541047",
   appId: "1:167594541047:web:b61c2ba198c07c69c8b8f2",
-  measurementId: "G-268PLLLDRD"
+  measurementId: "G-268PLLLDRD"          // "ölçümId" değil
 };
 
 // Firebase'i Başlat
