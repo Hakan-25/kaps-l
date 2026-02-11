@@ -1,14 +1,16 @@
-// --- FIREBASE AYARLARI (BUNLARI KENDİ PROJENLE DEĞİŞTİR) ---
-sabit firebaseConfig = { 
-  apiKey : "AIzaSyCD_dKXan4yjAzxqLC8Yfjx4JzXNne45Lk" , 
-  authDomain : "zamankaps.firebaseapp.com" , 
-  projeId : "zamankaps" , 
-  storageBucket : "zamankaps.firebasestorage.app" , 
-  messagingSenderId : "167594541047" , 
-  appId : "1:167594541047:web:b61c2ba198c07c69c8b8f2" , 
-  ölçümId : "G-268PLLLDRD" 
+// --- FIREBASE AYARLARI ---
+const firebaseConfig = {
+  apiKey: "AIzaSyCD_dKXan4yjAzxqLc8Yfjx4JzXNne45Lk",
+  authDomain: "zamankaps.firebaseapp.com",
+  projectId: "zamankaps",
+  storageBucket: "zamankaps.firebasestorage.app",
+  messagingSenderId: "167594541047",
+  appId: "1:167594541047:web:b61c2ba198c07c69c8b8f2",
+  measurementId: "G-268PLLLDRD"
 };
+
 // Firebase'i Başlat
+// Not: HTML'de "compat" kütüphanelerini kullandığın için bu yazım şekli doğrudur.
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -45,7 +47,7 @@ function login() {
     if(!email || !pass) return showError("auth-error", "Lütfen tüm alanları doldurun.");
 
     auth.signInWithEmailAndPassword(email, pass)
-        .catch(error => showError("auth-error", "Hata: " + error.message));
+        .catch(error => showError("auth-error", "Giriş hatası: " + error.message));
 }
 
 function register() {
@@ -64,7 +66,7 @@ function register() {
             });
         })
         .then(() => {
-            alert("Hesap oluşturuldu! Otomatik giriş yapılıyor...");
+            alert("Hesap oluşturuldu! Giriş yapılıyor...");
         })
         .catch(error => showError("auth-error", error.message));
 }
@@ -78,14 +80,15 @@ function showRegister() { loginForm.style.display = 'none'; registerForm.style.d
 function showLogin() { loginForm.style.display = 'block'; registerForm.style.display = 'none'; }
 function showError(elementId, msg) { 
     const el = document.getElementById(elementId);
-    el.innerText = msg;
-    setTimeout(() => el.innerText = "", 3000);
+    if(el) {
+        el.innerText = msg;
+        setTimeout(() => el.innerText = "", 5000);
+    }
 }
 
 // --- KAPSÜL İŞLEMLERİ ---
 function openCreateModal() { 
     document.getElementById('create-modal').classList.remove('hidden'); 
-    // Tarih seçiciye min olarak şu anı ata
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     document.getElementById('capsule-date').min = now.toISOString().slice(0,16);
@@ -98,15 +101,13 @@ async function saveCapsule() {
     const dateInput = document.getElementById('capsule-date').value;
     const imageFile = document.getElementById('capsule-image').files[0];
 
-    // Doğrulamalar
-    if (!text && !imageFile) return showError("modal-error", "Kapsül boş olamaz (yazı veya fotoğraf ekle).");
+    if (!text && !imageFile) return showError("modal-error", "Kapsül boş olamaz.");
     if (!dateInput) return showError("modal-error", "Lütfen açılma zamanını seç.");
 
     const openDate = new Date(dateInput);
     const now = new Date();
-    if (openDate <= now) return showError("modal-error", "Zaman kapsülü gelecekte açılmalıdır! Geçmişi seçemezsin.");
+    if (openDate <= now) return showError("modal-error", "Zaman kapsülü gelecekte açılmalıdır!");
 
-    // Yükleme Başlıyor butonu güncelle
     const saveBtn = document.querySelector('.save-btn');
     saveBtn.innerText = "Yükleniyor...";
     saveBtn.disabled = true;
@@ -114,14 +115,12 @@ async function saveCapsule() {
     try {
         let imageUrl = null;
         
-        // Resim varsa Storage'a yükle
         if (imageFile) {
             const storageRef = storage.ref(`capsules/${currentUser.uid}/${Date.now()}_${imageFile.name}`);
             await storageRef.put(imageFile);
             imageUrl = await storageRef.getDownloadURL();
         }
 
-        // Firestore'a kaydet
         await db.collection('capsules').add({
             userId: currentUser.uid,
             text: text,
@@ -135,28 +134,27 @@ async function saveCapsule() {
         document.getElementById('capsule-text').value = "";
         document.getElementById('capsule-image').value = "";
         alert("Kapsülün başarıyla gömüldü! ⏳");
-        loadCapsules(); // Listeyi yenile
+        loadCapsules();
 
     } catch (error) {
-        showError("modal-error", "Hata oluştu: " + error.message);
+        showError("modal-error", "Hata: " + error.message);
     } finally {
         saveBtn.innerText = "Zamanı Kilitle ve Sakla 🔒";
         saveBtn.disabled = false;
     }
 }
 
-// Kapsülleri Listele
 function loadCapsules() {
     capsuleList.innerHTML = '<div class="empty-state">Yükleniyor...</div>';
     
     db.collection('capsules')
         .where("userId", "==", currentUser.uid)
-        .orderBy("openDate", "asc") // En yakın tarih en üstte
+        .orderBy("openDate", "asc")
         .get()
         .then((querySnapshot) => {
             capsuleList.innerHTML = "";
             if(querySnapshot.empty) {
-                capsuleList.innerHTML = '<div class="empty-state">Henüz hiç kapsülün yok. Sol üstten oluştur! 🚀</div>';
+                capsuleList.innerHTML = '<div class="empty-state">Henüz hiç kapsülün yok. 🚀</div>';
                 return;
             }
 
@@ -169,13 +167,12 @@ function loadCapsules() {
                 let contentHtml = '';
                 
                 if (isLocked) {
-                    // KİLİTLİ GÖRÜNÜM
                     const timeLeft = getTimeRemaining(now, openDate);
                     contentHtml = `
                         <div class="capsule-card locked">
                             <div class="capsule-header">
                                 <span>🔒 Kilitli Kapsül</span>
-                                <span>Açılma: ${openDate.toLocaleDateString()} ${openDate.toLocaleTimeString()}</span>
+                                <span>Açılma: ${openDate.toLocaleString()}</span>
                             </div>
                             <div class="locked-msg">
                                 <i class="fas fa-hourglass-half"></i>
@@ -184,7 +181,6 @@ function loadCapsules() {
                         </div>
                     `;
                 } else {
-                    // AÇIK GÖRÜNÜM
                     contentHtml = `
                         <div class="capsule-card">
                             <div class="capsule-header">
@@ -198,6 +194,10 @@ function loadCapsules() {
                 }
                 capsuleList.innerHTML += contentHtml;
             });
+        })
+        .catch(err => {
+            console.error("Veri çekme hatası: ", err);
+            capsuleList.innerHTML = '<div class="error-msg">Veriler yüklenemedi.</div>';
         });
 }
 
@@ -205,5 +205,9 @@ function getTimeRemaining(now, target) {
     const diff = target - now;
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    return `${days} gün ${hours} saat`;
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (days > 0) return `${days} gün ${hours} saat`;
+    if (hours > 0) return `${hours} saat ${minutes} dakika`;
+    return `${minutes} dakika`;
 }
