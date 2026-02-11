@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zaman Kapsülü</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="auth-container" class="container">
+        <div class="auth-box">
+            <h1 class="logo">⏳ Zaman Kapsülü</h1>
+            <p class="tagline">Anılarını geleceğe sakla.</p>
+            
+            <div id="login-form">
+                <input type="email" id="login-email" placeholder="E-posta Adresi">
+                <input type="password" id="login-password" placeholder="Şifre">
+                <button onclick="login()">Giriş Yap</button>
+                <p class="switch-text">Hesabın yok mu? <span onclick="showRegister()">Kayıt Ol</span></p>
+            </div>
+
+            <div id="register-form" style="display: none;">
+                <input type="text" id="reg-username" placeholder="Kullanıcı Adı">
+                <input type="email" id="reg-email" placeholder="E-posta Adresi">
+                <input type="password" id="reg-password" placeholder="Şifre (Min 6 hane)">
+                <button onclick="register()">Hesap Oluştur</button>
+                <p class="switch-text">Zaten hesabın var mı? <span onclick="showLogin()">Giriş Yap</span></p>
+            </div>
+            <p id="auth-error" class="error-msg"></p>
+        </div>
+    </div>
+
+    <div id="app-container" class="container hidden">
+        
+        <header>
+            <div class="left-action" onclick="openCreateModal()">
+                <div class="plus-btn"><i class="fas fa-plus"></i></div>
+                <span>Kapsül Oluştur</span>
+            </div>
+            <div class="user-info">
+                <span id="display-username">Kullanıcı</span>
+                <i class="fas fa-sign-out-alt" onclick="logout()"></i>
+            </div>
+        </header>
+
+        <div class="capsule-list" id="capsule-list">
+            <div class="empty-state">Henüz hiç kapsülün yok. Sol üstten oluştur! 🚀</div>
+        </div>
+
+        <div id="create-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Yeni Kapsül</h2>
+                    <span class="close-btn" onclick="closeCreateModal()">&times;</span>
+                </div>
+                
+                <div class="modal-body">
+                    <label>Geleceğe Notun:</label>
+                    <textarea id="capsule-text" placeholder="Gelecekteki kendine ne söylemek istersin?"></textarea>
+                    
+                    <label>Fotoğraf Ekle (İsteğe bağlı):</label>
+                    <input type="file" id="capsule-image" accept="image/*">
+                    
+                    <label>Açılma Tarihi:</label>
+                    <input type="datetime-local" id="capsule-date">
+                    
+                    <p id="modal-error" class="error-msg"></p>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="save-btn" onclick="saveCapsule()">Zamanı Kilitle ve Sakla 🔒</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
