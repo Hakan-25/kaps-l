@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buse'nin Zaman Kapsülü ❤️</title>
+    <title>Buse'nin Zaman Kapsülüü ❤️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        :root { --primary: #ff8fa3; --bg: #fff0f3; --white: #ffffff; --text: #4a4a4a; }
+        :root { --primary: #ff8fa3; --bg: #fff0f3; --white: #ffffff; --text: #4a4a4a; --locked: #e0e0e0; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
         .container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; transition: 0.3s; }
@@ -20,13 +20,28 @@
         .auth-box h1 { color: #ff6b81; font-size: 1.5rem; margin-bottom: 5px; }
         input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #ffe3e3; border-radius: 12px; outline: none; text-align: center; }
         input:focus { border-color: var(--primary); }
-        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+        button:active { transform: scale(0.98); }
+
         /* Uygulama İçi */
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .capsule-list { padding: 20px; overflow-y: auto; height: calc(100vh - 70px); padding-bottom: 80px; }
-        .capsule-card { background: var(--white); padding: 15px; margin-bottom: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #ffe3e3; }
         
+        /* KAPSÜL KARTLARI */
+        .capsule-card { background: var(--white); padding: 20px; margin-bottom: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #ffe3e3; transition: 0.3s; position: relative; overflow: hidden; }
+        
+        /* Kilitli Kapsül Tasarımı */
+        .capsule-card.locked { background: #f4f4f4; border-color: #ddd; }
+        .capsule-card.locked .content-blur { filter: blur(5px); opacity: 0.5; user-select: none; }
+        .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
+        .countdown { font-weight: bold; color: #ff6b81; font-size: 1.1rem; background: white; padding: 5px 15px; border-radius: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 10px; }
+        
+        /* Açık Kapsül Tasarımı */
+        .capsule-card.unlocked { border-left: 5px solid var(--primary); animation: slideIn 0.5s ease; }
+        .unlock-badge { background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-bottom: 5px; }
+
+        @keyframes slideIn { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+
         /* Modal */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; justify-content: center; z-index: 99; }
         .modal-content { background: var(--white); width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 25px; }
@@ -65,12 +80,12 @@
                     <h3>Yeni Anı Ekle</h3>
                     <span onclick="closeModal()" style="font-size:1.5rem;">&times;</span>
                 </div>
-                <textarea id="capsule-text" placeholder="Bugün neler oldu?"></textarea>
+                <textarea id="capsule-text" placeholder="Geleceğe bir not bırak..."></textarea>
                 
                 <label style="font-size:0.8rem; color:#666;">Ne zaman açılsın?</label>
                 <input type="datetime-local" id="capsule-date" style="text-align:left;">
                 
-                <button onclick="saveCapsule()" id="save-btn">Sakla 🔒</button>
+                <button onclick="saveCapsule()" id="save-btn">Mühürle ve Sakla 🔒</button>
             </div>
         </div>
     </div>
@@ -79,9 +94,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // --- API AYARLARI ---
+        // --- SENİN VERDİĞİN API AYARLARI ---
         const firebaseConfig = {
-          apiKey: "AIzaSyCD_dKXan4yjAzxqLC8Yfjx4JzXNne45Lk",
+          apiKey: "AIzaSyCD_dKXan4yjAzxqLc8Yfjx4JzXNne45Lk",
           authDomain: "zamankaps.firebaseapp.com",
           projectId: "zamankaps",
           storageBucket: "zamankaps.firebasestorage.app",
@@ -94,7 +109,7 @@
         try {
             firebase.initializeApp(firebaseConfig);
         } catch (e) {
-            console.error("Firebase başlatılamadı, API keyleri kontrol et.");
+            console.error("Firebase Hatası: " + e.message);
         }
         
         const db = firebase.firestore();
@@ -116,17 +131,16 @@
             }
         }
 
-        // --- VERİTABANI İŞLEMLERİ ---
+        // --- VERİTABANI VE GERİ SAYIM İŞLEMLERİ ---
         
         function loadCapsules() {
             const list = document.getElementById('capsule-list');
-            list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#ccc;">Anılar getiriliyor...</div>';
+            list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#ccc;">Anılar aranıyor...</div>';
 
             db.collection('capsules')
               .where("userId", "==", FIXED_USER_ID)
               .orderBy("openDate", "asc")
-              .get()
-              .then((snapshot) => {
+              .onSnapshot((snapshot) => { // onSnapshot ile anlık güncelleme alıyoruz
                   list.innerHTML = "";
                   if (snapshot.empty) {
                       list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#ccc;">Henüz hiç anı yok. <br>Sağ üstten + ile ekle! 🌸</div>';
@@ -136,36 +150,72 @@
                   snapshot.forEach(doc => {
                       const data = doc.data();
                       if(!data.openDate) return;
-                      const date = data.openDate.toDate();
-                      const now = new Date();
-                      const isLocked = now < date;
+                      
+                      // Timestamp'i milisaniyeye çevirip data attribute olarak saklayacağız
+                      const targetTime = data.openDate.toDate().getTime(); 
+                      const uniqueId = doc.id;
 
-                      if (isLocked) {
-                          const diff = Math.ceil((date - now) / (1000 * 60 * 60 * 24));
-                          list.innerHTML += `
-                            <div class="capsule-card" style="background:#f9f9f9; opacity:0.8;">
-                                <div style="display:flex; justify-content:space-between; color:#999; font-size:0.8rem; margin-bottom:10px;">
-                                    <span>🔒 KİLİTLİ</span>
-                                    <span>${date.toLocaleDateString()}</span>
-                                </div>
-                                <div style="text-align:center; padding:10px;">Bu sürpriz ${diff} gün sonra açılacak. 🎁</div>
-                            </div>`;
-                      } else {
-                          list.innerHTML += `
-                            <div class="capsule-card">
+                      // Kart iskeletini oluştur (İçeriği timer fonksiyonu dolduracak)
+                      list.innerHTML += `
+                        <div id="card-${uniqueId}" class="capsule-card locked" data-target="${targetTime}">
+                            
+                            <div id="lock-layer-${uniqueId}" class="lock-overlay">
+                                <i class="fas fa-lock" style="font-size:2rem; color:#aaa;"></i>
+                                <div class="countdown" id="timer-${uniqueId}">Hesaplanıyor...</div>
+                            </div>
+
+                            <div id="content-${uniqueId}" class="content-blur">
                                 <div style="display:flex; justify-content:space-between; color:var(--primary); font-size:0.8rem; margin-bottom:5px;">
-                                    <span>✨ ANI</span>
-                                    <span>${date.toLocaleDateString()}</span>
+                                    <span class="unlock-badge">✨ ANI AÇILDI</span>
+                                    <span>${data.openDate.toDate().toLocaleDateString()}</span>
                                 </div>
-                                <div style="color:#555; line-height:1.4;">${data.text}</div>
-                            </div>`;
-                      }
+                                <div style="color:#555; line-height:1.4; font-size:1.1rem;">${data.text}</div>
+                            </div>
+                        </div>`;
                   });
-              })
-              .catch(err => {
-                  console.error(err);
-                  list.innerHTML = '<div style="text-align:center; color:red;">Veriler çekilemedi.</div>';
+                  
+                  // Sayacı hemen başlat
+                  startCountdownLoop();
               });
+        }
+
+        // --- GERİ SAYIM MOTORU ---
+        function startCountdownLoop() {
+            // Var olan bir döngü varsa temizle (üst üste binmesin)
+            if(window.timerInterval) clearInterval(window.timerInterval);
+
+            window.timerInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const cards = document.querySelectorAll('.capsule-card');
+
+                cards.forEach(card => {
+                    const target = parseInt(card.getAttribute('data-target'));
+                    const uniqueId = card.id.replace('card-', '');
+                    const timerEl = document.getElementById(`timer-${uniqueId}`);
+                    const lockLayer = document.getElementById(`lock-layer-${uniqueId}`);
+                    const contentLayer = document.getElementById(`content-${uniqueId}`);
+                    
+                    const distance = target - now;
+
+                    if (distance < 0) {
+                        // --- SÜRE DOLDU! KİLİDİ AÇ ---
+                        if(card.classList.contains('locked')) {
+                            card.classList.remove('locked');
+                            card.classList.add('unlocked');
+                            lockLayer.style.display = 'none'; // Kilidi kaldır
+                            contentLayer.classList.remove('content-blur'); // Bulanıklığı kaldır
+                        }
+                    } else {
+                        // --- SÜRE VAR, GERİ SAY ---
+                        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                        timerEl.innerHTML = `${days}g ${hours}s ${minutes}dk ${seconds}sn`;
+                    }
+                });
+            }, 1000); // Her 1 saniyede bir güncelle
         }
 
         async function saveCapsule() {
@@ -180,7 +230,6 @@
             btn.disabled = true;
 
             try {
-                // Sadece veritabanına yazıyoruz (Fotoğraf yok)
                 await db.collection('capsules').add({
                     userId: FIXED_USER_ID,
                     text: text,
@@ -190,13 +239,13 @@
 
                 closeModal();
                 document.getElementById('capsule-text').value = "";
-                loadCapsules();
-                alert("Anı başarıyla saklandı! 💖");
+                alert("Anı mühürlendi! Zamanı gelince açılacak. ⏳");
+                // onSnapshot kullandığımız için loadCapsules() çağırmaya gerek yok, otomatik yenilenir.
 
             } catch (error) {
                 alert("Hata oluştu: " + error.message);
             } finally {
-                btn.innerText = "Sakla 🔒";
+                btn.innerText = "Mühürle ve Sakla 🔒";
                 btn.disabled = false;
             }
         }
