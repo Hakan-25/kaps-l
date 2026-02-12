@@ -141,9 +141,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // --- SENİN API BİLGİLERİN (Ekran görüntüsünden alıp buraya yazdım) ---
+        // --- SENİN API BİLGİLERİN (DÜZELTİLDİ: c harfi C yapıldı) ---
         const firebaseConfig = {
-          apiKey: "AIzaSyCD_dKXan4yjAzxqLc8Yfjx4JzXNne45Lk",
+          apiKey: "AIzaSyCD_dKXan4yjAzxqLC8Yfjx4JzXNne45Lk",
           authDomain: "zamankaps.firebaseapp.com",
           projectId: "zamankaps",
           storageBucket: "zamankaps.firebasestorage.app",
@@ -157,7 +157,6 @@
             firebase.initializeApp(firebaseConfig);
         } catch (e) {
             console.error("Firebase başlatılamadı:", e);
-            alert("Bağlantı hatası! Sayfayı yenile.");
         }
         
         const db = firebase.firestore();
@@ -232,7 +231,7 @@
                   startCountdownLoop();
               }, (error) => {
                   console.error("Veri çekme hatası:", error);
-                  list.innerHTML = '<div style="text-align:center; color:red;">Bağlantı hatası oldu :(</div>';
+                  list.innerHTML = '<div style="text-align:center; color:red;">Bağlantı hatası oldu :( <br> <small>' + error.message + '</small></div>';
               });
         }
 
