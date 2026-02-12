@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buse'nin Zaman Kapsülüü ❤️</title>
+    <title>Buse'nin Zaman Kapsülü ❤️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        :root { --primary: #ff8fa3; --bg: #fff0f3; --white: #ffffff; --text: #4a4a4a; --locked: #e0e0e0; }
+        :root { --primary: #ff8fa3; --secondary: #a2d9ff; --bg: #fff0f3; --white: #ffffff; --text: #4a4a4a; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
         .container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; transition: 0.3s; }
@@ -24,23 +24,67 @@
         button:active { transform: scale(0.98); }
 
         /* Uygulama İçi */
-        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10; position: relative; }
         .capsule-list { padding: 20px; overflow-y: auto; height: calc(100vh - 70px); padding-bottom: 80px; }
         
-        /* KAPSÜL KARTLARI */
-        .capsule-card { background: var(--white); padding: 20px; margin-bottom: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #ffe3e3; transition: 0.3s; position: relative; overflow: hidden; }
-        
-        /* Kilitli Kapsül Tasarımı */
-        .capsule-card.locked { background: #f4f4f4; border-color: #ddd; }
-        .capsule-card.locked .content-blur { filter: blur(5px); opacity: 0.5; user-select: none; }
-        .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
-        .countdown { font-weight: bold; color: #ff6b81; font-size: 1.1rem; background: white; padding: 5px 15px; border-radius: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 10px; }
-        
-        /* Açık Kapsül Tasarımı */
-        .capsule-card.unlocked { border-left: 5px solid var(--primary); animation: slideIn 0.5s ease; }
-        .unlock-badge { background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-bottom: 5px; }
+        /* BULUT KAPSÜL TASARIMI */
+        .cloud-card { 
+            background: linear-gradient(to top, #f0f8ff, #ffffff); 
+            padding: 30px 20px; 
+            margin-bottom: 25px; 
+            border-radius: 30px; /* Bulut gibi yuvarlak hatlar */
+            box-shadow: 0 8px 20px rgba(162, 217, 255, 0.3); 
+            border: 2px solid #e6f7ff; 
+            text-align: center;
+            position: relative;
+            transition: 0.3s;
+        }
 
-        @keyframes slideIn { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+        /* Kilitli Durum Görselleri */
+        .cloud-icon-area { margin-bottom: 15px; position: relative; height: 60px; display: flex; align-items: center; justify-content: center; }
+        .fa-cloud { font-size: 4rem; color: var(--secondary); filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1)); }
+        .lock-icon { position: absolute; font-size: 1.2rem; color: #555; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+        /* Geri Sayım */
+        .timer-badge { 
+            background: var(--white); 
+            color: #555; 
+            font-family: 'Courier New', monospace; 
+            font-weight: bold; 
+            padding: 8px 15px; 
+            border-radius: 20px; 
+            border: 1px solid #ddd;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* Açma Butonu */
+        .open-btn { 
+            background: linear-gradient(45deg, #ff9a9e, #ff6b81); 
+            color: white; 
+            border: none; 
+            padding: 10px 25px; 
+            border-radius: 25px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            box-shadow: 0 4px 10px rgba(255, 107, 129, 0.4);
+            animation: pulse 1.5s infinite;
+            display: none; /* JS ile açacağız */
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* Gizli İçerik (Açıldıktan Sonra) */
+        .secret-content { 
+            display: none; 
+            text-align: left; 
+            margin-top: 15px; 
+            background: rgba(255,255,255,0.8); 
+            padding: 15px; 
+            border-radius: 15px; 
+            border-left: 4px solid var(--primary);
+            animation: fadeIn 0.8s;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Modal */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; justify-content: center; z-index: 99; }
@@ -71,7 +115,7 @@
         </header>
 
         <div id="capsule-list" class="capsule-list">
-            <div style="text-align:center; margin-top:50px; color:#ccc;">Yükleniyor...</div>
+            <div style="text-align:center; margin-top:50px; color:#ccc;">Bulutlar taranıyor... ☁️</div>
         </div>
         
         <div id="create-modal" class="modal hidden">
@@ -94,7 +138,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // --- SENİN VERDİĞİN API AYARLARI ---
+        // --- SENİN API AYARLARIN ---
         const firebaseConfig = {
           apiKey: "AIzaSyCD_dKXan4yjAzxqLc8Yfjx4JzXNne45Lk",
           authDomain: "zamankaps.firebaseapp.com",
@@ -105,13 +149,7 @@
           measurementId: "G-268PLLLDRD"
         };
 
-        // Firebase Başlat
-        try {
-            firebase.initializeApp(firebaseConfig);
-        } catch (e) {
-            console.error("Firebase Hatası: " + e.message);
-        }
-        
+        try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error(e); }
         const db = firebase.firestore();
         const FIXED_USER_ID = "buse_ozel_kullanici"; 
 
@@ -131,19 +169,17 @@
             }
         }
 
-        // --- VERİTABANI VE GERİ SAYIM İŞLEMLERİ ---
-        
+        // --- BULUTLARI YÜKLE ---
         function loadCapsules() {
             const list = document.getElementById('capsule-list');
-            list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#ccc;">Anılar aranıyor...</div>';
 
             db.collection('capsules')
               .where("userId", "==", FIXED_USER_ID)
               .orderBy("openDate", "asc")
-              .onSnapshot((snapshot) => { // onSnapshot ile anlık güncelleme alıyoruz
+              .onSnapshot((snapshot) => { 
                   list.innerHTML = "";
                   if (snapshot.empty) {
-                      list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#ccc;">Henüz hiç anı yok. <br>Sağ üstten + ile ekle! 🌸</div>';
+                      list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#ccc;">Hiç bulut yok. <br>Sağ üstten + ile ekle! ☁️</div>';
                       return;
                   }
 
@@ -151,59 +187,78 @@
                       const data = doc.data();
                       if(!data.openDate) return;
                       
-                      // Timestamp'i milisaniyeye çevirip data attribute olarak saklayacağız
                       const targetTime = data.openDate.toDate().getTime(); 
                       const uniqueId = doc.id;
 
-                      // Kart iskeletini oluştur (İçeriği timer fonksiyonu dolduracak)
+                      // BULUT KART TASARIMI
                       list.innerHTML += `
-                        <div id="card-${uniqueId}" class="capsule-card locked" data-target="${targetTime}">
+                        <div id="cloud-${uniqueId}" class="cloud-card" data-target="${targetTime}">
                             
-                            <div id="lock-layer-${uniqueId}" class="lock-overlay">
-                                <i class="fas fa-lock" style="font-size:2rem; color:#aaa;"></i>
-                                <div class="countdown" id="timer-${uniqueId}">Hesaplanıyor...</div>
+                            <div id="visual-${uniqueId}" class="cloud-icon-area">
+                                <i class="fas fa-cloud"></i>
+                                <i class="fas fa-lock lock-icon"></i>
                             </div>
 
-                            <div id="content-${uniqueId}" class="content-blur">
-                                <div style="display:flex; justify-content:space-between; color:var(--primary); font-size:0.8rem; margin-bottom:5px;">
-                                    <span class="unlock-badge">✨ ANI AÇILDI</span>
-                                    <span>${data.openDate.toDate().toLocaleDateString()}</span>
-                                </div>
-                                <div style="color:#555; line-height:1.4; font-size:1.1rem;">${data.text}</div>
+                            <div style="font-size:0.8rem; color:#888; margin-bottom:5px;">
+                                Açılma Zamanı: ${data.openDate.toDate().toLocaleDateString()}
+                            </div>
+
+                            <div id="timer-${uniqueId}" class="timer-badge">Hesaplanıyor...</div>
+
+                            <button id="btn-${uniqueId}" class="open-btn" onclick="revealContent('${uniqueId}')">
+                                Kapsülü Aç 🔓
+                            </button>
+
+                            <div id="content-${uniqueId}" class="secret-content">
+                                <h4 style="color:var(--primary); margin-bottom:5px;">Sevgili Buse,</h4>
+                                ${data.text}
                             </div>
                         </div>`;
                   });
-                  
-                  // Sayacı hemen başlat
                   startCountdownLoop();
               });
         }
 
+        // --- MANUEL AÇMA FONKSİYONU ---
+        function revealContent(id) {
+            // Butonu gizle, içeriği göster
+            document.getElementById(`btn-${id}`).style.display = 'none';
+            document.getElementById(`content-${id}`).style.display = 'block';
+            
+            // Görseli güncelle (Kilit ikonunu kaldır)
+            const visualArea = document.getElementById(`visual-${id}`);
+            visualArea.innerHTML = '<i class="fas fa-cloud-sun" style="font-size:4rem; color:#ffdd59;"></i>'; // Güneşli bulut yap
+        }
+
         // --- GERİ SAYIM MOTORU ---
         function startCountdownLoop() {
-            // Var olan bir döngü varsa temizle (üst üste binmesin)
             if(window.timerInterval) clearInterval(window.timerInterval);
 
             window.timerInterval = setInterval(() => {
                 const now = new Date().getTime();
-                const cards = document.querySelectorAll('.capsule-card');
+                const clouds = document.querySelectorAll('.cloud-card');
 
-                cards.forEach(card => {
-                    const target = parseInt(card.getAttribute('data-target'));
-                    const uniqueId = card.id.replace('card-', '');
-                    const timerEl = document.getElementById(`timer-${uniqueId}`);
-                    const lockLayer = document.getElementById(`lock-layer-${uniqueId}`);
-                    const contentLayer = document.getElementById(`content-${uniqueId}`);
+                clouds.forEach(cloud => {
+                    const target = parseInt(cloud.getAttribute('data-target'));
+                    const id = cloud.id.replace('cloud-', '');
+                    
+                    const timerEl = document.getElementById(`timer-${id}`);
+                    const btnEl = document.getElementById(`btn-${id}`);
+                    const contentEl = document.getElementById(`content-${id}`);
                     
                     const distance = target - now;
 
+                    // EĞER İÇERİK ZATEN AÇIKSA SAYACI DURDUR
+                    if(contentEl.style.display === 'block') {
+                        timerEl.style.display = 'none';
+                        return;
+                    }
+
                     if (distance < 0) {
-                        // --- SÜRE DOLDU! KİLİDİ AÇ ---
-                        if(card.classList.contains('locked')) {
-                            card.classList.remove('locked');
-                            card.classList.add('unlocked');
-                            lockLayer.style.display = 'none'; // Kilidi kaldır
-                            contentLayer.classList.remove('content-blur'); // Bulanıklığı kaldır
+                        // --- SÜRE DOLDU! BUTONU GÖSTER ---
+                        timerEl.style.display = 'none'; // Sayacı gizle
+                        if(contentEl.style.display !== 'block') { // Eğer henüz açılmadıysa butonu göster
+                            btnEl.style.display = 'inline-block';
                         }
                     } else {
                         // --- SÜRE VAR, GERİ SAY ---
@@ -213,9 +268,10 @@
                         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                         timerEl.innerHTML = `${days}g ${hours}s ${minutes}dk ${seconds}sn`;
+                        btnEl.style.display = 'none';
                     }
                 });
-            }, 1000); // Her 1 saniyede bir güncelle
+            }, 1000);
         }
 
         async function saveCapsule() {
@@ -231,29 +287,20 @@
 
             try {
                 await db.collection('capsules').add({
-                    userId: FIXED_USER_ID,
-                    text: text,
+                    userId: FIXED_USER_ID, text: text,
                     openDate: firebase.firestore.Timestamp.fromDate(new Date(dateVal)),
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
                 closeModal();
                 document.getElementById('capsule-text').value = "";
-                alert("Anı mühürlendi! Zamanı gelince açılacak. ⏳");
-                // onSnapshot kullandığımız için loadCapsules() çağırmaya gerek yok, otomatik yenilenir.
-
-            } catch (error) {
-                alert("Hata oluştu: " + error.message);
-            } finally {
-                btn.innerText = "Mühürle ve Sakla 🔒";
-                btn.disabled = false;
-            }
+                alert("Anı buluta gönderildi! ☁️");
+            } catch (error) { alert("Hata: " + error.message); } 
+            finally { btn.innerText = "Mühürle ve Sakla 🔒"; btn.disabled = false; }
         }
 
         function openModal() {
             document.getElementById('create-modal').classList.remove('hidden');
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             document.getElementById('capsule-date').min = now.toISOString().slice(0,16);
         }
         function closeModal() { document.getElementById('create-modal').classList.add('hidden'); }
