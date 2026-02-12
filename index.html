@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buse'ye Özel ❤️</title>
+    <title>Busenin Zaman Kapsülü ❤️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -26,8 +26,6 @@
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .capsule-list { padding: 20px; overflow-y: auto; height: calc(100vh - 70px); padding-bottom: 80px; }
         .capsule-card { background: var(--white); padding: 15px; margin-bottom: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #ffe3e3; }
-        .capsule-img { width: 100%; border-radius: 10px; margin-top: 10px; }
-        .locked-badge { background: #eee; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; color: #777; display: inline-block; }
         
         /* Modal */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; justify-content: center; z-index: 99; }
@@ -68,9 +66,10 @@
                     <span onclick="closeModal()" style="font-size:1.5rem;">&times;</span>
                 </div>
                 <textarea id="capsule-text" placeholder="Bugün neler oldu?"></textarea>
-                <input type="file" id="capsule-image" accept="image/*" style="border:none; text-align:left; padding-left:0;">
+                
                 <label style="font-size:0.8rem; color:#666;">Ne zaman açılsın?</label>
                 <input type="datetime-local" id="capsule-date" style="text-align:left;">
+                
                 <button onclick="saveCapsule()" id="save-btn">Sakla 🔒</button>
             </div>
         </div>
@@ -78,53 +77,48 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
 
     <script>
-        // --- 1. AYARLAR ---
+        // --- API AYARLARI ---
         const firebaseConfig = {
+            // FIREBASE'DEN KOPYALADIĞIN KODLARI BURAYA YAPIŞTIR
             apiKey: "BURAYA_API_KEY_YAPISTIR",
-            authDomain: "BURAYA_AUTH_DOMAIN_YAPISTIR",
-            projectId: "BURAYA_PROJECT_ID_YAPISTIR",
-            storageBucket: "BURAYA_STORAGE_BUCKET_YAPISTIR",
-            messagingSenderId: "BURAYA_SENDER_ID",
-            appId: "BURAYA_APP_ID"
+            authDomain: "BURAYA_...",
+            projectId: "BURAYA_...",
+            storageBucket: "BURAYA_...",
+            messagingSenderId: "BURAYA_...",
+            appId: "BURAYA_..."
         };
 
         // Firebase Başlat
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const storage = firebase.storage();
-
-        // Sabit Kullanıcı ID (Authentication olmadığı için bunu uyduruyoruz)
         const FIXED_USER_ID = "buse_ozel_kullanici"; 
 
-        // --- 2. GİRİŞ KONTROLÜ (Kodun İçinde) ---
+        // --- GİRİŞ KONTROLÜ ---
         function checkLogin() {
             const user = document.getElementById('username').value.trim().toLowerCase();
             const pass = document.getElementById('password').value.trim();
             const error = document.getElementById('error-msg');
 
-            // ŞİFRE BURADA KONTROL EDİLİYOR
             if (user === "buse" && pass === "buse2525") {
                 document.getElementById('auth-container').classList.add('hidden');
                 document.getElementById('app-container').classList.remove('hidden');
-                loadCapsules(); // Giriş başarılıysa verileri çek
+                loadCapsules();
             } else {
                 error.innerText = "Hatalı bilgi girdin tatlım. Tekrar dene. 🧐";
                 setTimeout(() => error.innerText = "", 3000);
             }
         }
 
-        // --- 3. VERİTABANI İŞLEMLERİ ---
+        // --- VERİTABANI İŞLEMLERİ ---
         
-        // Kapsülleri Listele
         function loadCapsules() {
             const list = document.getElementById('capsule-list');
             list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#ccc;">Anılar getiriliyor...</div>';
 
             db.collection('capsules')
-              .where("userId", "==", FIXED_USER_ID) // Sadece Buse'nin verileri
+              .where("userId", "==", FIXED_USER_ID)
               .orderBy("openDate", "asc")
               .get()
               .then((snapshot) => {
@@ -141,7 +135,6 @@
                       const isLocked = now < date;
 
                       if (isLocked) {
-                          // KİLİTLİ
                           const diff = Math.ceil((date - now) / (1000 * 60 * 60 * 24));
                           list.innerHTML += `
                             <div class="capsule-card" style="background:#f9f9f9; opacity:0.8;">
@@ -149,12 +142,9 @@
                                     <span>🔒 KİLİTLİ</span>
                                     <span>${date.toLocaleDateString()}</span>
                                 </div>
-                                <div style="text-align:center; padding:10px;">
-                                    Bu sürpriz ${diff} gün sonra açılacak. 🎁
-                                </div>
+                                <div style="text-align:center; padding:10px;">Bu sürpriz ${diff} gün sonra açılacak. 🎁</div>
                             </div>`;
                       } else {
-                          // AÇIK
                           list.innerHTML += `
                             <div class="capsule-card">
                                 <div style="display:flex; justify-content:space-between; color:var(--primary); font-size:0.8rem; margin-bottom:5px;">
@@ -162,53 +152,39 @@
                                     <span>${date.toLocaleDateString()}</span>
                                 </div>
                                 <div style="color:#555; line-height:1.4;">${data.text}</div>
-                                ${data.imageUrl ? `<img src="${data.imageUrl}" class="capsule-img" onclick="window.open(this.src)">` : ''}
                             </div>`;
                       }
                   });
               })
               .catch(err => {
                   console.error(err);
-                  list.innerHTML = '<div style="text-align:center; color:red;">Veriler çekilemedi. İnternetini kontrol et.</div>';
+                  list.innerHTML = '<div style="text-align:center; color:red;">Veriler çekilemedi.</div>';
               });
         }
 
-        // Kapsül Kaydet
         async function saveCapsule() {
             const text = document.getElementById('capsule-text').value;
             const dateVal = document.getElementById('capsule-date').value;
-            const file = document.getElementById('capsule-image').files[0];
             const btn = document.getElementById('save-btn');
 
-            if (!text && !file) return alert("Boş anı olmaz! Yazı veya resim ekle.");
+            if (!text) return alert("Boş anı olmaz! Bir şeyler yaz.");
             if (!dateVal) return alert("Ne zaman açılacağını seçmelisin.");
 
             btn.innerText = "Yükleniyor...";
             btn.disabled = true;
 
             try {
-                let imageUrl = null;
-                
-                // Resim varsa yükle
-                if (file) {
-                    const ref = storage.ref('capsules/' + Date.now() + '_' + file.name);
-                    await ref.put(file);
-                    imageUrl = await ref.getDownloadURL();
-                }
-
-                // Veritabanına yaz
+                // Sadece veritabanına yazıyoruz (Fotoğraf yok)
                 await db.collection('capsules').add({
-                    userId: FIXED_USER_ID, // Sabit ID kullanıyoruz
+                    userId: FIXED_USER_ID,
                     text: text,
-                    imageUrl: imageUrl,
                     openDate: firebase.firestore.Timestamp.fromDate(new Date(dateVal)),
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 closeModal();
                 document.getElementById('capsule-text').value = "";
-                document.getElementById('capsule-image').value = "";
-                loadCapsules(); // Listeyi yenile
+                loadCapsules();
                 alert("Anı başarıyla saklandı! 💖");
 
             } catch (error) {
@@ -219,10 +195,8 @@
             }
         }
 
-        // Modal Aç/Kapa
         function openModal() {
             document.getElementById('create-modal').classList.remove('hidden');
-            // Tarihi bugüne ayarla
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             document.getElementById('capsule-date').min = now.toISOString().slice(0,16);
