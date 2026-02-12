@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buse'nin Zaman Kapsül ❤️</title>
+    <title>Buse'nin Zaman Kapsülü ❤️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -27,12 +27,12 @@
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10; position: relative; }
         .capsule-list { padding: 20px; overflow-y: auto; height: calc(100vh - 70px); padding-bottom: 80px; }
         
-        /* BULUT KAPSÜL TASARIMI */
+        /* --- BULUT KAPSÜL TASARIMI --- */
         .cloud-card { 
             background: linear-gradient(to top, #f0f8ff, #ffffff); 
-            padding: 30px 20px; 
+            padding: 25px 20px; 
             margin-bottom: 25px; 
-            border-radius: 30px; /* Bulut gibi yuvarlak hatlar */
+            border-radius: 30px; /* Bulut yuvarlaklığı */
             box-shadow: 0 8px 20px rgba(162, 217, 255, 0.3); 
             border: 2px solid #e6f7ff; 
             text-align: center;
@@ -40,12 +40,12 @@
             transition: 0.3s;
         }
 
-        /* Kilitli Durum Görselleri */
-        .cloud-icon-area { margin-bottom: 15px; position: relative; height: 60px; display: flex; align-items: center; justify-content: center; }
+        /* Görsel Alanı */
+        .cloud-icon-area { margin-bottom: 10px; position: relative; height: 60px; display: flex; align-items: center; justify-content: center; }
         .fa-cloud { font-size: 4rem; color: var(--secondary); filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1)); }
         .lock-icon { position: absolute; font-size: 1.2rem; color: #555; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-        /* Geri Sayım */
+        /* Sayaç Rozeti */
         .timer-badge { 
             background: var(--white); 
             color: #555; 
@@ -56,9 +56,10 @@
             border: 1px solid #ddd;
             display: inline-block;
             margin-top: 10px;
+            font-size: 0.9rem;
         }
 
-        /* Açma Butonu */
+        /* Açma Butonu (Başlangıçta Gizli) */
         .open-btn { 
             background: linear-gradient(45deg, #ff9a9e, #ff6b81); 
             color: white; 
@@ -69,20 +70,22 @@
             cursor: pointer; 
             box-shadow: 0 4px 10px rgba(255, 107, 129, 0.4);
             animation: pulse 1.5s infinite;
-            display: none; /* JS ile açacağız */
+            display: none; 
+            margin-top: 10px;
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* Gizli İçerik (Açıldıktan Sonra) */
+        /* Gizli İçerik (Açıldıktan Sonra Görünür) */
         .secret-content { 
             display: none; 
             text-align: left; 
             margin-top: 15px; 
-            background: rgba(255,255,255,0.8); 
-            padding: 15px; 
+            background: rgba(255,255,255,0.9); 
+            padding: 20px; 
             border-radius: 15px; 
-            border-left: 4px solid var(--primary);
+            border-left: 5px solid var(--primary);
             animation: fadeIn 0.8s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -129,7 +132,7 @@
                 <label style="font-size:0.8rem; color:#666;">Ne zaman açılsın?</label>
                 <input type="datetime-local" id="capsule-date" style="text-align:left;">
                 
-                <button onclick="saveCapsule()" id="save-btn">Mühürle ve Sakla 🔒</button>
+                <button onclick="saveCapsule()" id="save-btn">Buluta Gönder ☁️</button>
             </div>
         </div>
     </div>
@@ -138,7 +141,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // --- SENİN API AYARLARIN ---
+        // --- SENİN API BİLGİLERİN (Ekran görüntüsünden alıp buraya yazdım) ---
         const firebaseConfig = {
           apiKey: "AIzaSyCD_dKXan4yjAzxqLc8Yfjx4JzXNne45Lk",
           authDomain: "zamankaps.firebaseapp.com",
@@ -149,7 +152,14 @@
           measurementId: "G-268PLLLDRD"
         };
 
-        try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error(e); }
+        // Firebase Başlatma
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch (e) {
+            console.error("Firebase başlatılamadı:", e);
+            alert("Bağlantı hatası! Sayfayı yenile.");
+        }
+        
         const db = firebase.firestore();
         const FIXED_USER_ID = "buse_ozel_kullanici"; 
 
@@ -169,17 +179,19 @@
             }
         }
 
-        // --- BULUTLARI YÜKLE ---
+        // --- BULUTLARI YÜKLEME VE LİSTELEME ---
         function loadCapsules() {
             const list = document.getElementById('capsule-list');
 
+            // Veritabanını dinle (Canlı güncellenir)
             db.collection('capsules')
               .where("userId", "==", FIXED_USER_ID)
               .orderBy("openDate", "asc")
               .onSnapshot((snapshot) => { 
                   list.innerHTML = "";
+                  
                   if (snapshot.empty) {
-                      list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#ccc;">Hiç bulut yok. <br>Sağ üstten + ile ekle! ☁️</div>';
+                      list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#ccc;">Henüz hiç bulut yok. <br>Sağ üstten + ile ekle! ☁️</div>';
                       return;
                   }
 
@@ -190,7 +202,7 @@
                       const targetTime = data.openDate.toDate().getTime(); 
                       const uniqueId = doc.id;
 
-                      // BULUT KART TASARIMI
+                      // HTML ŞABLONU (Bulut Görünümü)
                       list.innerHTML += `
                         <div id="cloud-${uniqueId}" class="cloud-card" data-target="${targetTime}">
                             
@@ -200,7 +212,7 @@
                             </div>
 
                             <div style="font-size:0.8rem; color:#888; margin-bottom:5px;">
-                                Açılma Zamanı: ${data.openDate.toDate().toLocaleDateString()}
+                                Açılma Zamanı: ${data.openDate.toDate().toLocaleDateString()} ${data.openDate.toDate().toLocaleTimeString().slice(0,5)}
                             </div>
 
                             <div id="timer-${uniqueId}" class="timer-badge">Hesaplanıyor...</div>
@@ -210,27 +222,32 @@
                             </button>
 
                             <div id="content-${uniqueId}" class="secret-content">
-                                <h4 style="color:var(--primary); margin-bottom:5px;">Sevgili Buse,</h4>
-                                ${data.text}
+                                <h4 style="color:var(--primary); margin-bottom:10px;">Sevgili Buse,</h4>
+                                <p style="line-height:1.5; font-size:1.05rem;">${data.text}</p>
                             </div>
                         </div>`;
                   });
+                  
+                  // Sayaç döngüsünü başlat
                   startCountdownLoop();
+              }, (error) => {
+                  console.error("Veri çekme hatası:", error);
+                  list.innerHTML = '<div style="text-align:center; color:red;">Bağlantı hatası oldu :(</div>';
               });
         }
 
-        // --- MANUEL AÇMA FONKSİYONU ---
+        // --- MANUEL AÇMA (İSTEĞE BAĞLI) ---
         function revealContent(id) {
             // Butonu gizle, içeriği göster
             document.getElementById(`btn-${id}`).style.display = 'none';
             document.getElementById(`content-${id}`).style.display = 'block';
             
-            // Görseli güncelle (Kilit ikonunu kaldır)
+            // Görseli güncelle: Bulutun içinden güneş çıksın ☀️
             const visualArea = document.getElementById(`visual-${id}`);
-            visualArea.innerHTML = '<i class="fas fa-cloud-sun" style="font-size:4rem; color:#ffdd59;"></i>'; // Güneşli bulut yap
+            visualArea.innerHTML = '<i class="fas fa-cloud-sun" style="font-size:4rem; color:#ffdd59;"></i>';
         }
 
-        // --- GERİ SAYIM MOTORU ---
+        // --- GERİ SAYIM MOTORU (Her saniye çalışır) ---
         function startCountdownLoop() {
             if(window.timerInterval) clearInterval(window.timerInterval);
 
@@ -248,16 +265,18 @@
                     
                     const distance = target - now;
 
-                    // EĞER İÇERİK ZATEN AÇIKSA SAYACI DURDUR
+                    // Eğer içerik zaten açılmışsa sayacı gizle
                     if(contentEl.style.display === 'block') {
                         timerEl.style.display = 'none';
                         return;
                     }
 
                     if (distance < 0) {
-                        // --- SÜRE DOLDU! BUTONU GÖSTER ---
-                        timerEl.style.display = 'none'; // Sayacı gizle
-                        if(contentEl.style.display !== 'block') { // Eğer henüz açılmadıysa butonu göster
+                        // --- SÜRE DOLDU! ---
+                        timerEl.style.display = 'none'; // Sayacı kaldır
+                        
+                        // Eğer henüz açılmadıysa BUTONU GÖSTER
+                        if(contentEl.style.display !== 'block') { 
                             btnEl.style.display = 'inline-block';
                         }
                     } else {
@@ -268,12 +287,13 @@
                         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                         timerEl.innerHTML = `${days}g ${hours}s ${minutes}dk ${seconds}sn`;
-                        btnEl.style.display = 'none';
+                        btnEl.style.display = 'none'; // Butonu gizli tut
                     }
                 });
             }, 1000);
         }
 
+        // --- KAYDETME FONKSİYONU ---
         async function saveCapsule() {
             const text = document.getElementById('capsule-text').value;
             const dateVal = document.getElementById('capsule-date').value;
@@ -286,16 +306,25 @@
             btn.disabled = true;
 
             try {
+                // Veritabanına ekle
                 await db.collection('capsules').add({
-                    userId: FIXED_USER_ID, text: text,
+                    userId: FIXED_USER_ID, 
+                    text: text,
                     openDate: firebase.firestore.Timestamp.fromDate(new Date(dateVal)),
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
+                
                 closeModal();
                 document.getElementById('capsule-text').value = "";
                 alert("Anı buluta gönderildi! ☁️");
-            } catch (error) { alert("Hata: " + error.message); } 
-            finally { btn.innerText = "Mühürle ve Sakla 🔒"; btn.disabled = false; }
+                
+            } catch (error) { 
+                alert("Hata oluştu: " + error.message); 
+                console.error("Kayıt hatası:", error);
+            } finally { 
+                btn.innerText = "Buluta Gönder ☁️"; 
+                btn.disabled = false; 
+            }
         }
 
         function openModal() {
