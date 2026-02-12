@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Busenin Zaman Kapsülü ❤️</title>
+    <title>Buse'nin Zaman Kapsülü ❤️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -81,17 +81,22 @@
     <script>
         // --- API AYARLARI ---
         const firebaseConfig = {
-            // FIREBASE'DEN KOPYALADIĞIN KODLARI BURAYA YAPIŞTIR
-            apiKey: "BURAYA_API_KEY_YAPISTIR",
-            authDomain: "BURAYA_...",
-            projectId: "BURAYA_...",
-            storageBucket: "BURAYA_...",
-            messagingSenderId: "BURAYA_...",
-            appId: "BURAYA_..."
+          apiKey: "AIzaSyCD_dKXan4yjAzxqLC8Yfjx4JzXNne45Lk",
+          authDomain: "zamankaps.firebaseapp.com",
+          projectId: "zamankaps",
+          storageBucket: "zamankaps.firebasestorage.app",
+          messagingSenderId: "167594541047",
+          appId: "1:167594541047:web:b61c2ba198c07c69c8b8f2",
+          measurementId: "G-268PLLLDRD"
         };
 
         // Firebase Başlat
-        firebase.initializeApp(firebaseConfig);
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch (e) {
+            console.error("Firebase başlatılamadı, API keyleri kontrol et.");
+        }
+        
         const db = firebase.firestore();
         const FIXED_USER_ID = "buse_ozel_kullanici"; 
 
@@ -130,6 +135,7 @@
 
                   snapshot.forEach(doc => {
                       const data = doc.data();
+                      if(!data.openDate) return;
                       const date = data.openDate.toDate();
                       const now = new Date();
                       const isLocked = now < date;
