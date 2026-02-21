@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buse'nin Zaman Kapsülü ❤️</title>
+    <title>Hatice'nin Zaman Kapsülü ❤️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -128,7 +128,7 @@
 
     <div id="app-container" class="container hidden">
         <header>
-            <div style="font-weight:bold; color:var(--primary);">Buse'nin Anıları</div>
+            <div style="font-weight:bold; color:var(--primary);">Hatice'nin Anıları</div>
             <i class="fas fa-plus-circle" onclick="openModal()" style="font-size:1.8rem; color:var(--primary); cursor:pointer;"></i>
         </header>
 
@@ -169,7 +169,7 @@
         catch (e) { console.error("Firebase Hatası:", e); }
         
         const db = firebase.firestore();
-        const FIXED_USER_ID = "buse_ozel_kullanici"; 
+        const FIXED_USER_ID = "hatice_ozel_kullanici"; 
 
         // GİRİŞ KONTROLÜ
         function checkLogin() {
@@ -177,7 +177,7 @@
             const pass = document.getElementById('password').value.trim();
             const error = document.getElementById('error-msg');
 
-            if (user === "buse" && pass === "buse2525") {
+            if (user === "hatice" && pass === "hatice1453") {
                 document.getElementById('auth-container').classList.add('hidden');
                 document.getElementById('app-container').classList.remove('hidden');
                 loadCapsules();
@@ -241,7 +241,7 @@
                             </button>
 
                             <div id="content-${uniqueId}" class="secret-content">
-                                <h4 style="color:var(--primary); margin-bottom:10px;">Sevgili Buse,</h4>
+                                <h4 style="color:var(--primary); margin-bottom:10px;">Sevgili Hatice,</h4>
                                 <p style="line-height:1.5; font-size:1.05rem;">${data.text}</p>
                             </div>
                         </div>`;
